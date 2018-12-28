@@ -1,32 +1,41 @@
-import {
-  BrushSettings,
-  Decodable,
-  Encodable,
-  FrameData,
-  Point,
-  Serializable,
-} from "./types";
+import { DEFAULT_AUTHOR } from "./constants";
+import { BrushData, Encodable, Point } from "./types";
+import { ab2str, str2ab } from "./utils";
 
-export class Frame
-  implements Serializable<FrameData>, Encodable<void>, Decodable<void> {
-  private _points: Point[] = [];
-  private _brush: BrushSettings;
-  private _createdAt: Date;
+interface FrameData {
+  author: string;
+  createdAt: string;
+  brush: BrushData & Encodable;
+  points: Point[];
+}
 
-  constructor(data: FrameData) {
-    this._points = [...data.points];
-    this._brush = { ...data.brush };
-    this._createdAt = data.createdAt
-      ? new Date(Date.parse(data.createdAt))
-      : new Date();
-  }
-
+export class Frame implements Encodable {
   get brush() {
-    return { ...this._brush };
+    return this._brush;
   }
 
   get points() {
     return [...this._points];
+  }
+
+  public static createWithBrush(brush: BrushData & Encodable) {
+    return new Frame({
+      author: DEFAULT_AUTHOR,
+      brush,
+      createdAt: new Date().toISOString(),
+      points: [],
+    });
+  }
+
+  private _points: Point[] = [];
+  private _brush: BrushData & Encodable;
+  private _createdAt: Date;
+  private _author = DEFAULT_AUTHOR;
+
+  constructor(data: FrameData) {
+    this._points = [...data.points];
+    this._brush = data.brush;
+    this._createdAt = new Date(Date.parse(data.createdAt));
   }
 
   public add(x: number, y: number, drag: boolean) {
@@ -34,19 +43,10 @@ export class Frame
     return this;
   }
 
-  public serialize() {
-    return {
-      brush: this.brush,
-      createdAt: this._createdAt.toISOString(),
-      points: this.points,
-    };
-  }
-
   public encode() {
-    return;
-  }
+    // const author = str2ab(this._author);
+    const brush = this._brush.encode();
 
-  public decode() {
-    return;
+    return brush;
   }
 }

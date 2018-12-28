@@ -1,11 +1,10 @@
-export interface BrushSettings {
-  fillStyle: string;
+export interface BrushData {
   strokeStyle: string;
   lineWidth: number;
 }
 
 export interface GUISettings {
-  brush: BrushSettings;
+  brush: BrushData & Encodable;
 }
 
 export interface PaperSettings {
@@ -13,21 +12,11 @@ export interface PaperSettings {
 }
 
 export type Point = [number, number, boolean];
-export interface FrameData {
-  brush: BrushSettings;
-  points: Point[];
-  createdAt?: string;
-}
-export type FrameSender = () => void;
 
-export interface Encodable<T> {
-  encode(): T;
+export interface Encodable {
+  encode(): ArrayBuffer;
 }
 
-export interface Decodable<T> {
-  decode(input: ArrayBuffer): T;
-}
-
-export interface Serializable<T> {
-  serialize(): T;
+export interface JSONable<T> {
+  toJSON(): T;
 }

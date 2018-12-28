@@ -1,4 +1,4 @@
-import { FrameSender } from "./types";
+type FrameSender = () => void;
 
 export class Ws {
   private ws: WebSocket;

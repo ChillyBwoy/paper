@@ -1,12 +1,16 @@
 import { Frame } from "./frame";
-import { FrameData, GUISettings, PaperSettings } from "./types";
+import { GUISettings, PaperSettings } from "./types";
 
 export class Paper {
   private ctx: CanvasRenderingContext2D;
-  private frames: FrameData[] = [];
+  private frames: Frame[] = [];
   private currentFrame: Frame | null = null;
 
-  constructor($el: HTMLElement, private settings: PaperSettings, private gui: GUISettings) {
+  constructor(
+    $el: HTMLElement,
+    private settings: PaperSettings,
+    private gui: GUISettings,
+  ) {
     const { width, height } = $el.getBoundingClientRect();
 
     const $canvas: HTMLCanvasElement = document.createElement("canvas");
@@ -32,23 +36,7 @@ export class Paper {
   }
 
   private replaceFrame() {
-    return new Frame({
-      brush: this.gui.brush,
-      points: [],
-    });
-  }
-
-  private flush() {
-    if (!this.currentFrame) {
-      return;
-    }
-    const count = this.currentFrame.points.length;
-    const { flushInterval } = this.settings;
-    if (count === 0 || count < flushInterval) {
-      return;
-    }
-    this.frames.push(this.currentFrame.serialize());
-    this.currentFrame = this.replaceFrame();
+    return Frame.createWithBrush(this.gui.brush);
   }
 
   private begin() {
@@ -65,7 +53,9 @@ export class Paper {
       return;
     }
 
-    this.frames.push(this.currentFrame.serialize());
+    console.log(this.currentFrame.encode());
+
+    this.frames.push(this.currentFrame);
     this.currentFrame = null;
   }
 
@@ -102,7 +92,7 @@ export class Paper {
     this.draw();
   }
 
-  private drawFrame(frame: FrameData) {
+  private drawFrame(frame: Frame) {
     const { points, brush } = frame;
     this.ctx.lineJoin = "round";
     this.ctx.lineWidth = brush.lineWidth;
@@ -110,14 +100,14 @@ export class Paper {
     for (const [i, [x, y, drag]] of points.entries()) {
       this.ctx.beginPath();
       if (drag && i > 0) {
-        this.ctx.moveTo(points[i - 1][0], points[i - 1][1]);
+        const [x1, y1] = points[i - 1];
+        this.ctx.moveTo(x1, y1);
       } else {
         this.ctx.moveTo(x, y);
       }
       this.ctx.lineTo(x, y);
       this.ctx.closePath();
       this.ctx.strokeStyle = brush.strokeStyle;
-      this.ctx.fillStyle = brush.fillStyle;
       this.ctx.stroke();
     }
   }
@@ -130,11 +120,12 @@ export class Paper {
   }
 
   private redraw() {
-    [...this.frames, this.currentFrame].forEach((f) => {
-      if (f) {
-        this.drawFrame(f);
-      }
-    });
+    const frames = [...this.frames];
+    if (this.currentFrame) {
+      frames.push(this.currentFrame);
+    }
+
+    frames.forEach((f) => this.drawFrame(f));
   }
 
   private pushFrame(x: number, y: number, drag: boolean) {
