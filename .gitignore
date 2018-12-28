@@ -1,0 +1,12 @@
+/server/target
+/client/node_modules/
+/client/public/js
+/client/public/css
+
+**/*.rs.bk
+
+npm-debug.log
+yarn-error.log
+.idea
+.vscode
+.DS_Store

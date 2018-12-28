@@ -1,0 +1,43 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "main sidebar"
+    "footer footer";
+  grid-template-columns: 1fr 200px;
+  grid-template-rows: 100px 1fr 50px;
+  height: 100vh;
+  width: 100vw;
+}
+
+.layoutHeader {
+  background-color: #ccc;
+  grid-area: header;
+}
+
+.layoutMain {
+  background: #fff;
+  grid-area: main;
+  position: relative;
+}
+
+.layoutSidebar {
+  background-color: #ccc;
+  grid-area: sidebar;
+}
+
+.layoutFooter {
+  background-color: #ccc;
+  grid-area: footer;
+}
+
+.canvas {
+  background-color: #fff;
+}

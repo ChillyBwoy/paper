@@ -1,0 +1,9 @@
+[package]
+name = "websockets"
+version = "0.1.0"
+authors = ["Eugene Cheltsov <chill.icp@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+ws = "*"
+uuid = { version = "0.7", features = ["serde", "v4"] }
