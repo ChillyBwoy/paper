@@ -1,45 +1,35 @@
-extern crate ws;
+extern crate docopt;
+#[macro_use]
+extern crate serde_derive;
+extern crate serde;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::fmt;
 use std::rc::Rc;
 
 use uuid::Uuid;
 
+use docopt::Docopt;
+
 use ws::{listen, CloseCode, Error, Handler, Handshake, Message, Result, Sender};
 
-const SERVER_ADDRESS: &str = "127.0.0.1:3012";
+mod paper;
 
-struct Client {
-    uuid: Uuid,
-    name: String,
-}
+use crate::paper::user::User;
 
-impl fmt::Display for Client {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}<{}>", self.uuid, self.name)
-    }
-}
-
-type Clients = Rc<RefCell<HashMap<String, Client>>>;
+type Users = Rc<RefCell<HashMap<Uuid, User>>>;
 
 struct Server {
     out: Sender,
-    clients: Clients,
+    users: Users,
 }
 
 impl Handler for Server {
     fn on_open(&mut self, _: Handshake) -> Result<()> {
-        let uuid = Uuid::new_v4();
-        let name = String::from("Unknown");
-        let client = Client {
-            uuid: uuid,
-            name: name,
-        };
+        let user = User::new();
 
-        self.clients.borrow_mut().insert(uuid.to_string(), client);
-        self.out.send(Message::text(uuid.to_string()))
+        self.users.borrow_mut().insert(user.uuid, user);
+        self.out.send(Message::text("HAI"))
     }
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
@@ -53,7 +43,7 @@ impl Handler for Server {
             CloseCode::Abnormal => {
                 println!("Closing handshake failed! Unable to obtain closing status from client.")
             }
-            _ => println!("The client encountered an error: {}", reason),
+            _ => println!("Error: {}", reason),
         }
     }
 
@@ -62,12 +52,38 @@ impl Handler for Server {
     }
 }
 
-fn main() {
-    let clients = Clients::new(RefCell::new(HashMap::new()));
+const USAGE: &'static str = "
+Paper websocket server
 
-    listen(SERVER_ADDRESS, |out| Server {
+Usage:
+  paper (-h | --help)
+  paper start [--host=<host> --port=<port>]
+
+Options:
+  -h, --help     Show this screen.
+  --host=<host>  Specify address [default: 127.0.0.1].
+  --port=<port>  Specify port [default: 3012].
+";
+
+#[derive(Debug, Deserialize)]
+struct Args {
+    flag_port: String,
+    flag_host: String,
+}
+
+fn main() {
+    let users = Users::new(RefCell::new(HashMap::new()));
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
+
+    let server_addr = format!("{}:{}", args.flag_host, args.flag_port);
+
+    println!("Starting ws server: {}", server_addr);
+
+    listen(server_addr, |out| Server {
         out: out,
-        clients: clients.clone(),
+        users: users.clone(),
     })
     .unwrap()
 }

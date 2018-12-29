@@ -10,14 +10,19 @@ export class Ws {
     this.ws.addEventListener("open", this.handleOpen);
     this.ws.addEventListener("message", this.handleMessage);
     this.ws.addEventListener("close", this.handleClose);
+    this.ws.addEventListener("errir", this.handleError);
   }
 
   public send(payload: any) {
     this.ws.send(payload);
   }
 
-  private handleOpen = (even: Event) => {
-    console.log("ws open");
+  private handleError = (event: Event) => {
+    console.error("Error:\n", event);
+  }
+
+  private handleOpen = (event: Event) => {
+    console.log("Connection opened\n");
   }
 
   private handleMessage = (event: MessageEvent) => {
@@ -29,11 +34,11 @@ export class Ws {
     //   coords.push(chunk);
     // }
 
-    console.log("recieved", event.data);
+    console.log("Data recieved:\n", event.data);
     // this.onMessage(coords);
   }
 
   private handleClose = (event: CloseEvent) => {
-    console.log("ws close");
+    console.log("Connection closed");
   }
 }

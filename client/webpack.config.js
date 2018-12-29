@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   entry: {
-    app: './src/ts/app.ts',
+    app: './src/ts/index.ts',
   },
   target: 'web',
   output: {

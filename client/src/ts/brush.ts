@@ -1,4 +1,4 @@
-import { BrushData, Encodable } from "./types";
+import { Encodable } from "./types";
 import { abconcat, str2ab } from "./utils";
 
 export class Brush implements Brush, Encodable {

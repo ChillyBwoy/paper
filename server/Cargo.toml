@@ -1,5 +1,5 @@
 [package]
-name = "websockets"
+name = "paper"
 version = "0.1.0"
 authors = ["Eugene Cheltsov <chill.icp@gmail.com>"]
 edition = "2018"
@@ -7,3 +7,7 @@ edition = "2018"
 [dependencies]
 ws = "*"
 uuid = { version = "0.7", features = ["serde", "v4"] }
+chrono = "0.4"
+docopt = "1"
+serde = "1.0"
+serde_derive = "1.0"

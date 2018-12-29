@@ -1,13 +1,6 @@
 import { DEFAULT_AUTHOR } from "./constants";
-import { BrushData, Encodable, Point } from "./types";
+import { BrushData, Encodable, FrameData, Point } from "./types";
 import { ab2str, str2ab } from "./utils";
-
-interface FrameData {
-  author: string;
-  createdAt: string;
-  brush: BrushData & Encodable;
-  points: Point[];
-}
 
 export class Frame implements Encodable {
   get brush() {
