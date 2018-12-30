@@ -1,45 +1,24 @@
-import { DEFAULT_AUTHOR } from "./constants";
-import { BrushData, Encodable, FrameData, Point } from "./types";
-import { ab2str, str2ab } from "./utils";
+import { DrawingTool, Point } from "./types";
 
-export class Frame implements Encodable {
-  get brush() {
-    return this._brush;
+interface FrameData {
+  drawingTool: string;
+  points?: Point[];
+  createdAt?: Date;
+}
+
+export class Frame {
+  public drawingTool: string;
+  public points: Point[];
+  public createdAt: Date;
+
+  constructor({ drawingTool, points = [], createdAt = new Date() }: FrameData) {
+    this.drawingTool = drawingTool;
+    this.points = points;
+    this.createdAt = createdAt;
   }
 
-  get points() {
-    return [...this._points];
-  }
-
-  public static createWithBrush(brush: BrushData & Encodable) {
-    return new Frame({
-      author: DEFAULT_AUTHOR,
-      brush,
-      createdAt: new Date().toISOString(),
-      points: [],
-    });
-  }
-
-  private _points: Point[] = [];
-  private _brush: BrushData & Encodable;
-  private _createdAt: Date;
-  private _author = DEFAULT_AUTHOR;
-
-  constructor(data: FrameData) {
-    this._points = [...data.points];
-    this._brush = data.brush;
-    this._createdAt = new Date(Date.parse(data.createdAt));
-  }
-
-  public add(x: number, y: number, drag: boolean) {
-    this._points.push([x, y, drag]);
+  public add(x: number, y: number) {
+    this.points.push([x, y]);
     return this;
-  }
-
-  public encode() {
-    // const author = str2ab(this._author);
-    const brush = this._brush.encode();
-
-    return brush;
   }
 }

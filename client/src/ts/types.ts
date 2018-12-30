@@ -1,31 +1,40 @@
-export interface BrushData {
-  strokeStyle: string;
-  lineWidth: number;
+import * as dat from "dat.gui";
+
+export type ColorRGB = [number, number, number];
+
+export type Point = [number, number];
+export type EmptyPoint = [null, null];
+export type MaybePoint = Point | EmptyPoint;
+
+export interface Canvas {}
+
+export interface UserInterfaceController {
+  drawingTool: DrawingTool | null;
+
+  getPalette(name: string): Palette;
+  addPalette(palette: Palette): void;
+  addDrawingTool(tool: DrawingTool): void;
 }
 
-export interface GUISettings {
-  brush: BrushData & Encodable;
+export type GUI = dat.GUI;
+export type GUIController = dat.GUIController;
+
+export abstract class DrawingTool {
+  public abstract name: string;
+  protected gui: UserInterfaceController | null = null;
+
+  public abstract begin(ctx: CanvasRenderingContext2D, p: Point): void;
+  public abstract end(ctx: CanvasRenderingContext2D, p: Point): void;
+  public abstract draw(ctx: CanvasRenderingContext2D, p2: Point): void;
+
+  public connectTo(gui: UserInterfaceController) {
+    this.gui = gui;
+  }
 }
 
-export interface PaperSettings {
-  flushInterval: number;
-}
-
-export type Point = [number, number, boolean];
-
-export interface Encodable {
-  encode(): ArrayBuffer;
-}
-
-export interface JSONable<T> {
-  toJSON(): T;
-}
-
-export interface FrameData {
-  author: string;
-  createdAt: string;
-  brush: BrushData & Encodable;
-  points: Point[];
+export interface Palette {
+  name: string;
+  connectTo(gui: GUI): void;
 }
 
 /*

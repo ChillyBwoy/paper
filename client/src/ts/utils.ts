@@ -1,3 +1,5 @@
+import { ColorRGB } from "./types";
+
 export function abconcat(...buffers: ArrayBuffer[]) {
   const size = buffers.reduce((a, b) => a + b.byteLength, 0);
   const resultBuff = new Uint16Array(size);
@@ -30,4 +32,9 @@ export function str2ab(str: string) {
   }
 
   return buf;
+}
+
+export function rgb2str(color: ColorRGB, alpha: number = 1): string {
+  const [r, g, b] = color;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }

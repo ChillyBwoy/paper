@@ -2,7 +2,7 @@ extern crate chrono;
 
 use chrono::{DateTime, Utc};
 
-use crate::paper::brush::Brush;
+use crate::paper::drawing_tool::Brush;
 use crate::paper::point::Point;
 
 #[derive(Debug)]
