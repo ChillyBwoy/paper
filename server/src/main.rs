@@ -33,6 +33,7 @@ impl Handler for Server {
     }
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
+        println!("Data recieved: {}", msg);
         self.out.broadcast(msg)
     }
 

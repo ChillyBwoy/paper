@@ -9,11 +9,9 @@ export default class App {
   constructor(private $el: HTMLElement, private gui: UserInterfaceController) {}
 
   public append(callback: AppendType) {
-    const { width, height } = this.$el.getBoundingClientRect();
-
     const $canvas: HTMLCanvasElement = document.createElement("canvas");
-    $canvas.setAttribute("width", `${width}`);
-    $canvas.setAttribute("height", `${height}`);
+    $canvas.setAttribute("width", `${1000}`);
+    $canvas.setAttribute("height", `${1000}`);
 
     this.$el.appendChild($canvas);
 

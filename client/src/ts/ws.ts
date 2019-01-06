@@ -5,7 +5,7 @@ export class Ws {
 
   constructor(addr: string, private onMessage: FrameSender) {
     this.ws = new WebSocket(`ws://${addr}`);
-    this.ws.binaryType = "arraybuffer";
+    // this.ws.binaryType = "arraybuffer";
 
     this.ws.addEventListener("open", this.handleOpen);
     this.ws.addEventListener("message", this.handleMessage);

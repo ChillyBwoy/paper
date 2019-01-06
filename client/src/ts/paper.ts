@@ -1,4 +1,10 @@
-import { Canvas, DrawingTool, Point, UserInterfaceController } from "./types";
+import {
+  Canvas,
+  DrawingTool,
+  Frame,
+  Point,
+  UserInterfaceController,
+} from "./types";
 
 export class Paper implements Canvas {
   private allowDraw = false;
@@ -6,6 +12,7 @@ export class Paper implements Canvas {
   constructor(
     private ctx: CanvasRenderingContext2D,
     private gui: UserInterfaceController,
+    private send: (frame: Frame) => void,
   ) {
     const { canvas } = ctx;
     canvas.addEventListener("mousedown", this.handleMouseDown);
@@ -15,11 +22,7 @@ export class Paper implements Canvas {
   }
 
   private get drawingTool(): DrawingTool {
-    const { drawingTool } = this.gui;
-    if (!drawingTool) {
-      throw new Error("Drawing tool not selected");
-    }
-    return drawingTool;
+    return this.gui.dt;
   }
 
   public clear() {
@@ -33,7 +36,8 @@ export class Paper implements Canvas {
   }
 
   private end(p: Point, tool: DrawingTool) {
-    tool.end(this.ctx, p);
+    const payload = tool.end(this.ctx, p);
+    this.send(payload);
     this.allowDraw = false;
   }
 
@@ -42,9 +46,11 @@ export class Paper implements Canvas {
   }
 
   private getPoint = (event: MouseEvent): Point => {
-    const { top, left } = this.ctx.canvas.getBoundingClientRect();
-    const x = event.pageX - left;
-    const y = event.pageY - top;
+    const { top } = this.ctx.canvas.getBoundingClientRect();
+
+    const offsetTop = top + window.scrollY;
+    const x = event.pageX;
+    const y = event.pageY - offsetTop;
 
     return [x, y];
   }
@@ -65,10 +71,7 @@ export class Paper implements Canvas {
     if (!this.allowDraw) {
       return;
     }
-    const { drawingTool } = this.gui;
-    if (!drawingTool) {
-      throw new Error("Drawing tool not selected");
-    }
-    this.draw(this.getPoint(event), drawingTool);
+    const { dt } = this.gui;
+    this.draw(this.getPoint(event), dt);
   }
 }
