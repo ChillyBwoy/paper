@@ -22,8 +22,8 @@ export interface DrawingTool {
   readonly palettes: Palette[];
 
   begin(ctx: CanvasRenderingContext2D, p: Point): void;
-  end(ctx: CanvasRenderingContext2D, p: Point): Frame;
-  draw(ctx: CanvasRenderingContext2D, p2: Point): void;
+  end(ctx: CanvasRenderingContext2D, p: Point): void;
+  draw(ctx: CanvasRenderingContext2D, p: Point): void;
 }
 
 export interface PaletteData<T = object> {

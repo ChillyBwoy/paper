@@ -18,7 +18,8 @@
       "ban-keywords",
       "check-format",
       "allow-leading-underscore"
-    ]
+    ],
+    "ordered-imports": true
   },
   "rulesDirectory": []
 }

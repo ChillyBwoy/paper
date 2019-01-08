@@ -8,6 +8,7 @@ import {
 
 export class Paper implements Canvas {
   private allowDraw = false;
+  private points: Point[] = [];
 
   constructor(
     private ctx: CanvasRenderingContext2D,
@@ -30,19 +31,29 @@ export class Paper implements Canvas {
     this.ctx.clearRect(0, 0, width, height);
   }
 
-  private begin(p: Point, tool: DrawingTool) {
-    tool.begin(this.ctx, p);
+  private begin(point: Point, tool: DrawingTool) {
+    tool.begin(this.ctx, point);
     this.allowDraw = true;
+    this.points.push(point);
   }
 
-  private end(p: Point, tool: DrawingTool) {
-    const payload = tool.end(this.ctx, p);
-    this.send(payload);
+  private end(point: Point, tool: DrawingTool) {
     this.allowDraw = false;
+    tool.end(this.ctx, point);
+
+    if (this.points.length > 0) {
+      this.send({
+        drawingTool: this.drawingTool.name,
+        palettes: this.gui.palettes.map((p) => p.serialize()),
+        points: this.points,
+      });
+      this.points.length = 0;
+    }
   }
 
-  private draw(p: Point, tool: DrawingTool) {
-    tool.draw(this.ctx, p);
+  private draw(point: Point, tool: DrawingTool) {
+    tool.draw(this.ctx, point);
+    this.points.push(point);
   }
 
   private getPoint = (event: MouseEvent): Point => {

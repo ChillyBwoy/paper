@@ -1,7 +1,9 @@
-extern crate docopt;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde;
+extern crate serde_json;
+
+extern crate docopt;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -11,11 +13,13 @@ use uuid::Uuid;
 
 use docopt::Docopt;
 
-use ws::{listen, CloseCode, Error, Handler, Handshake, Message, Result, Sender};
+use ws::{listen, CloseCode, Error, Handler, Handshake, Message, Sender};
 
 mod paper;
+mod store;
 
 use crate::paper::user::User;
+use crate::store::Action;
 
 type Users = Rc<RefCell<HashMap<Uuid, User>>>;
 
@@ -25,14 +29,17 @@ struct Server {
 }
 
 impl Handler for Server {
-    fn on_open(&mut self, _: Handshake) -> Result<()> {
+    fn on_open(&mut self, _: Handshake) -> ws::Result<()> {
         let user = User::new();
+        // self.users.borrow_mut().insert(user.uuid, user);
 
-        self.users.borrow_mut().insert(user.uuid, user);
-        self.out.send(Message::text("HAI"))
+        let payload = (String::from("init"), user);
+        let response = serde_json::to_string(&payload).unwrap();
+
+        self.out.send(Message::text(response))
     }
 
-    fn on_message(&mut self, msg: Message) -> Result<()> {
+    fn on_message(&mut self, msg: Message) -> ws::Result<()> {
         println!("Data recieved: {}", msg);
         self.out.broadcast(msg)
     }

@@ -2,12 +2,12 @@ use std::fmt;
 
 use crate::paper::common;
 
-#[derive(Debug)]
-pub(crate) struct Point(i32, i32, bool);
+#[derive(Serialize, Deserialize, Debug)]
+pub(crate) struct Point(i16, i16);
 
 impl Point {
     pub fn new() -> Point {
-        Point(0, 0, false)
+        Point(0, 0)
     }
 }
 
@@ -18,7 +18,7 @@ impl fmt::Display for Point {
 }
 
 impl common::Encodable for Point {
-    fn encode(&self) -> Vec<i32> {
-        vec![self.0, self.1, self.2 as i32]
+    fn encode(&self) -> Vec<i16> {
+        vec![self.0, self.1]
     }
 }

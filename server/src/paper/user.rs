@@ -3,7 +3,7 @@ use uuid::Uuid;
 
 use crate::paper::frame::Frame;
 
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct User {
     pub uuid: Uuid,
     pub name: String,
