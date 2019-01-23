@@ -1,10 +1,8 @@
 #[derive(Debug)]
-pub(crate) struct Brush {
-}
+pub struct Brush {}
 
 impl Brush {
     pub fn new() -> Brush {
-        Brush {
-        }
+        Brush {}
     }
 }

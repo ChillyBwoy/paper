@@ -19,7 +19,6 @@ mod paper;
 mod store;
 
 use crate::paper::user::User;
-use crate::store::Action;
 
 type Users = Rc<RefCell<HashMap<Uuid, User>>>;
 

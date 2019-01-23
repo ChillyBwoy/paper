@@ -5,12 +5,12 @@ extern crate chrono;
 use crate::paper::point::Point;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub(crate) struct Palette {
+pub struct Palette {
     pub name: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub(crate) struct Frame {
+pub struct Frame {
     // pub created_at: DateTime<Utc>,
     pub points: Vec<Point>,
     pub drawing_tool: String,
